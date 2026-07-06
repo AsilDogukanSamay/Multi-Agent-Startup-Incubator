@@ -998,3 +998,340 @@ textarea:focus {
         transform: translateX(0);
     }
 }
+
+/* 3D Prototype Tab Layout */
+.prototype-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: center;
+    min-height: 480px;
+}
+
+@media (max-width: 768px) {
+    .prototype-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.prototype-info {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.prototype-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.proto-tab-btn {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--panel-border);
+    color: var(--text-secondary);
+    padding: 12px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    text-align: left;
+}
+
+.proto-tab-btn:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--accent-purple);
+    transform: translateX(4px);
+}
+
+.proto-tab-btn.active-proto {
+    color: #fff;
+    background: var(--accent-gradient);
+    border-color: transparent;
+    box-shadow: 0 4px 15px rgba(124, 58, 237, 0.2);
+}
+
+.prototype-viewport {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 500px;
+}
+
+/* 3D Smartphone CSS Mockup */
+.phone-3d-container {
+    width: 220px;
+    height: 450px;
+    perspective: 1000px;
+}
+
+.phone-3d-device {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transform: rotateX(15deg) rotateY(-20deg);
+    transition: transform 0.1s ease;
+}
+
+.phone-face {
+    position: absolute;
+    background: #0f111a;
+    border: 2px solid #2a2f45;
+}
+
+/* Front Face */
+.phone-front {
+    width: 220px;
+    height: 450px;
+    transform: translateZ(10px);
+    border-radius: 36px;
+    padding: 10px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    background: #0d0f18;
+    z-index: 10;
+}
+
+/* Speaker Notch */
+.phone-speaker {
+    width: 60px;
+    height: 18px;
+    background: #05060b;
+    border-radius: 0 0 12px 12px;
+    position: absolute;
+    top: 10px;
+    left: 80px;
+    z-index: 100;
+}
+
+/* Home Indicator */
+.phone-home-indicator {
+    width: 80px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    position: absolute;
+    bottom: 8px;
+    left: 70px;
+    z-index: 100;
+}
+
+/* Screen */
+.phone-screen {
+    width: 200px;
+    height: 410px;
+    background: #06070b;
+    border-radius: 28px;
+    overflow-y: auto;
+    position: relative;
+    padding: 20px 10px 10px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.phone-screen::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for device look */
+}
+
+/* Back Face */
+.phone-back {
+    width: 220px;
+    height: 450px;
+    transform: rotateY(180deg) translateZ(10px);
+    border-radius: 36px;
+    background: #151824;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #2d324b;
+}
+
+.phone-camera {
+    width: 40px;
+    height: 80px;
+    background: #090a10;
+    border-radius: 20px;
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    border: 2px solid #2d324b;
+}
+
+.phone-logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    opacity: 0.5;
+}
+
+/* Left & Right Sides (Depth) */
+.phone-left, .phone-right {
+    width: 20px;
+    height: 450px;
+    background: #1c2030;
+    border: 1px solid #2d324b;
+}
+
+.phone-left {
+    transform: rotateY(-90deg) translateZ(110px);
+    border-radius: 5px 0 0 5px;
+}
+
+.phone-right {
+    transform: rotateY(90deg) translateZ(110px);
+    border-radius: 0 5px 5px 0;
+}
+
+/* Top & Bottom Sides */
+.phone-top, .phone-bottom {
+    width: 220px;
+    height: 20px;
+    background: #1c2030;
+    border: 1px solid #2d324b;
+}
+
+.phone-top {
+    transform: rotateX(90deg) translateZ(225px);
+}
+
+.phone-bottom {
+    transform: rotateX(-90deg) translateZ(225px);
+}
+
+/* Mockup UI Design Inside Screen */
+.phone-ui-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 6px;
+    margin-bottom: 4px;
+}
+
+.phone-ui-appname {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #fff;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.phone-ui-time {
+    font-size: 0.6rem;
+    color: var(--text-secondary);
+}
+
+.phone-ui-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.phone-ui-card h5 {
+    font-size: 0.7rem;
+    color: #fff;
+    font-weight: 600;
+}
+
+.phone-ui-card p {
+    font-size: 0.6rem;
+    color: var(--text-secondary);
+    line-height: 1.3;
+}
+
+.phone-ui-circle-progress {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 0;
+}
+
+.phone-ui-ring {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: conic-gradient(var(--accent-purple) var(--ring-fill, 74%), rgba(255,255,255,0.05) 0);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
+}
+
+.phone-ui-ring::before {
+    content: '';
+    position: absolute;
+    width: 74px;
+    height: 74px;
+    background: #06070b;
+    border-radius: 50%;
+}
+
+.phone-ui-ring-value {
+    position: relative;
+    z-index: 10;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+.phone-ui-btn {
+    background: var(--accent-gradient);
+    border: none;
+    color: #fff;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.phone-ui-btn:active {
+    transform: scale(0.95);
+}
+
+.phone-ui-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.6rem;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.phone-ui-stat:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.phone-ui-stat-label {
+    color: var(--text-secondary);
+}
+
+.phone-ui-stat-val {
+    color: var(--accent-cyan);
+    font-weight: 700;
+}

@@ -90,6 +90,7 @@
                         <button class="tab-btn" data-tab="tab-market"><i class="fa-solid fa-users"></i> Pazar & SWOT</button>
                         <button class="tab-btn" data-tab="tab-finance"><i class="fa-solid fa-coins"></i> Finans</button>
                         <button class="tab-btn" data-tab="tab-tech"><i class="fa-solid fa-layer-group"></i> Mimari</button>
+                        <button class="tab-btn" data-tab="tab-prototype"><i class="fa-solid fa-mobile-screen-button"></i> 3D Prototip</button>
                     </div>
 
                     <div class="tab-content active" id="tab-overview">
@@ -196,6 +197,42 @@
                         <div class="info-card">
                             <h3><i class="fa-solid fa-sitemap"></i> Mimari Özet</h3>
                             <p id="t-summary"></p>
+                        </div>
+                    </div>
+
+                    <!-- 3D Prototype Tab Content -->
+                    <div class="tab-content" id="tab-prototype">
+                        <div class="prototype-layout">
+                            <div class="prototype-info info-card">
+                                <h3><i class="fa-solid fa-circle-info"></i> İnteraktif Prototip</h3>
+                                <p class="panel-desc">Ajanlarımız girişim fikrinize uygun mobil uygulama arayüzünü tasarladı. Cihazı fare hareketlerinizle 3D olarak döndürebilir ve ekran üzerindeki butonlara tıklayarak prototip ile etkileşime geçebilirsiniz.</p>
+                                <div class="prototype-actions">
+                                    <button class="proto-tab-btn active-proto" data-proto-tab="home"><i class="fa-solid fa-house"></i> Ana Sayfa</button>
+                                    <button class="proto-tab-btn" data-proto-tab="stats"><i class="fa-solid fa-chart-simple"></i> Analizler</button>
+                                    <button class="proto-tab-btn" data-proto-tab="settings"><i class="fa-solid fa-gear"></i> Ayarlar</button>
+                                </div>
+                            </div>
+                            <div class="prototype-viewport">
+                                <div class="phone-3d-container" id="phone-container">
+                                    <div class="phone-3d-device" id="phone-device">
+                                        <div class="phone-face phone-front">
+                                            <div class="phone-speaker"></div>
+                                            <div class="phone-screen" id="phone-screen-content">
+                                                <!-- Mockup screen HTML goes here -->
+                                            </div>
+                                            <div class="phone-home-indicator"></div>
+                                        </div>
+                                        <div class="phone-face phone-back">
+                                            <div class="phone-camera"></div>
+                                            <div class="phone-logo">SI</div>
+                                        </div>
+                                        <div class="phone-face phone-left"></div>
+                                        <div class="phone-face phone-right"></div>
+                                        <div class="phone-face phone-top"></div>
+                                        <div class="phone-face phone-bottom"></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
