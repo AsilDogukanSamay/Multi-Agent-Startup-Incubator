@@ -304,9 +304,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 3D Smartphone Device Rotation (Tilt on Mouse Move)
+    // 3D Smartphone Device Rotation (Tilt on Mouse Move) & Glare effect
     const phoneContainer = document.getElementById('phone-container');
     const phoneDevice = document.getElementById('phone-device');
+    const phoneGlare = document.getElementById('phone-glare');
 
     if (phoneContainer && phoneDevice) {
         phoneContainer.addEventListener('mousemove', e => {
@@ -319,28 +320,51 @@ document.addEventListener('DOMContentLoaded', () => {
             const rotateY = (x / (rect.width / 2)) * 30;
 
             phoneDevice.style.transform = `rotateX(${15 + rotateX}deg) rotateY(${-20 + rotateY}deg)`;
+
+            // Glare reflection movement (moves in opposite direction)
+            if (phoneGlare) {
+                const glareX = -(x / (rect.width / 2)) * 25;
+                const glareY = -(y / (rect.height / 2)) * 25;
+                phoneGlare.style.transform = `translate(${glareX}px, ${glareY}px)`;
+            }
         });
 
         phoneContainer.addEventListener('mouseleave', () => {
-            // Reset to default angle
+            // Reset to default angle and glare
             phoneDevice.style.transform = 'rotateX(15deg) rotateY(-20deg)';
+            if (phoneGlare) {
+                phoneGlare.style.transform = 'none';
+            }
         });
     }
 
     // 3D Prototype State & Mockup Builder
     let currentCategory = "SaaS";
     let appTitle = "Girişim AI";
+    let activeTab = "home";
 
     // Setup tab buttons inside prototype panel
     const protoTabs = document.querySelectorAll('.proto-tab-btn');
     protoTabs.forEach(btn => {
         btn.addEventListener('click', () => {
-            protoTabs.forEach(b => b.classList.remove('active-proto'));
-            btn.classList.add('active-proto');
             const tabName = btn.getAttribute('data-proto-tab');
-            updatePhoneScreen(tabName);
+            switchTab(tabName);
         });
     });
+
+    function switchTab(tabName) {
+        activeTab = tabName;
+        // Sync Left Side Buttons
+        protoTabs.forEach(b => {
+            if (b.getAttribute('data-proto-tab') === tabName) {
+                b.classList.add('active-proto');
+            } else {
+                b.classList.remove('active-proto');
+            }
+        });
+
+        updatePhoneScreen(tabName);
+    }
 
     function buildMockupData(idea) {
         const ideaLower = idea.toLowerCase();
@@ -354,12 +378,26 @@ document.addEventListener('DOMContentLoaded', () => {
         if (ideaLower.includes("tarım") || ideaLower.includes("sulama") || ideaLower.includes("bitki") || ideaLower.includes("bahçe")) {
             currentCategory = "Agriculture";
             appTitle = appTitle === "Incubate" ? "AgriPulse" : appTitle;
-        } else if (ideaLower.includes("pet") || ideaLower.includes("hayvan") || ideaLower.includes("köpek") || ideaLower.includes("kedi")) {
-            currentCategory = "PetCare";
-            appTitle = appTitle === "Incubate" ? "PetCare" : appTitle;
-        } else if (ideaLower.includes("sağlık") || ideaLower.includes("spor") || ideaLower.includes("fit") || ideaLower.includes("diyet")) {
+        } else if (ideaLower.includes("pet") || ideaLower.includes("hayvan") || ideaLower.includes("köpek") || ideaLower.includes("kedi") || ideaLower.includes("otel")) {
+            if (ideaLower.includes("otel") || ideaLower.includes("rezervasyon")) {
+                currentCategory = "PetHotel";
+                appTitle = appTitle === "Incubate" ? "PetStay" : appTitle;
+            } else {
+                currentCategory = "PetCare";
+                appTitle = appTitle === "Incubate" ? "PetCare" : appTitle;
+            }
+        } else if (ideaLower.includes("eğitim") || ideaLower.includes("okul") || ideaLower.includes("öğrenci") || ideaLower.includes("ders") || ideaLower.includes("kurs")) {
+            currentCategory = "EdTech";
+            appTitle = appTitle === "Incubate" ? "EduAI" : appTitle;
+        } else if (ideaLower.includes("otel") || ideaLower.includes("rezervasyon") || ideaLower.includes("tatil") || ideaLower.includes("bilet") || ideaLower.includes("seyahat")) {
+            currentCategory = "Booking";
+            appTitle = appTitle === "Incubate" ? "Bookify" : appTitle;
+        } else if (ideaLower.includes("sağlık") || ideaLower.includes("spor") || ideaLower.includes("fit") || ideaLower.includes("diyet") || ideaLower.includes("hastane") || ideaLower.includes("doktor")) {
             currentCategory = "Health";
             appTitle = appTitle === "Incubate" ? "LifeFit" : appTitle;
+        } else if (ideaLower.includes("yemek") || ideaLower.includes("restoran") || ideaLower.includes("kurye") || ideaLower.includes("sipariş") || ideaLower.includes("mutfak")) {
+            currentCategory = "FoodDelivery";
+            appTitle = appTitle === "Incubate" ? "QuickBite" : appTitle;
         } else if (ideaLower.includes("ticaret") || ideaLower.includes("market") || ideaLower.includes("satış") || ideaLower.includes("dükkan") || ideaLower.includes("e-ticaret")) {
             currentCategory = "Ecommerce";
             appTitle = appTitle === "Incubate" ? "B2BStore" : appTitle;
@@ -369,9 +407,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // Reset active prototype tab and show home view
-        protoTabs.forEach(b => b.classList.remove('active-proto'));
-        document.querySelector('[data-proto-tab="home"]').classList.add('active-proto');
-        updatePhoneScreen("home");
+        switchTab("home");
     }
 
     function updatePhoneScreen(tab) {
@@ -380,10 +416,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
+        // Screen base layout with iOS Status Bar
         let screenHtml = `
+            <div class="phone-status-bar">
+                <span class="status-time">${timeStr}</span>
+                <div class="status-icons">
+                    <i class="fa-solid fa-signal"></i>
+                    <i class="fa-solid fa-wifi"></i>
+                    <i class="fa-solid fa-battery-full"></i>
+                </div>
+            </div>
             <div class="phone-ui-header">
                 <span class="phone-ui-appname"><i class="fa-solid fa-rocket"></i> ${appTitle}</span>
-                <span class="phone-ui-time">${timeStr}</span>
             </div>
         `;
 
@@ -391,83 +435,177 @@ document.addEventListener('DOMContentLoaded', () => {
             if (currentCategory === "Agriculture") {
                 screenHtml += `
                     <div class="phone-ui-card">
-                        <h5>🌱 Tarla Durumu</h5>
-                        <p>Yapay zeka analizine göre tarladaki nem seviyesi kritik sınırda.</p>
+                        <h5><i class="fa-solid fa-seedling"></i> Tarla Nem Durumu</h5>
+                        <p>Ajanlarımız IoT sensör verilerini analiz ediyor. Toprak nemi kritik sınırda!</p>
                     </div>
                     <div class="phone-ui-circle-progress">
-                        <div class="phone-ui-ring" id="proto-moisture-ring" style="--ring-fill: 42%;">
+                        <div class="svg-container" style="position: relative; display: flex; justify-content: center; align-items: center;">
+                            <svg class="svg-progress-svg" width="90" height="90">
+                                <defs>
+                                    <linearGradient id="svg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="var(--accent-purple)" />
+                                        <stop offset="100%" stop-color="var(--accent-cyan)" />
+                                    </linearGradient>
+                                </defs>
+                                <circle class="svg-progress-bg" cx="45" cy="45" r="38"></circle>
+                                <circle class="svg-progress-val" id="proto-svg-circle" cx="45" cy="45" r="38" stroke-dasharray="238.76" stroke-dashoffset="138.48"></circle>
+                            </svg>
                             <span class="phone-ui-ring-value" id="proto-ring-val">%42</span>
                         </div>
-                        <span style="font-size: 0.6rem; color: var(--text-secondary);">Toprak Nem Seviyesi</span>
+                        <span style="font-size: 0.55rem; color: var(--text-secondary);">Anlık Nem Seviyesi</span>
                     </div>
                     <button class="phone-ui-btn" id="proto-water-btn"><i class="fa-solid fa-droplet"></i> Sulamayı Başlat</button>
+                `;
+            } else if (currentCategory === "PetHotel") {
+                screenHtml += `
+                    <div class="phone-ui-card">
+                        <h5><i class="fa-solid fa-hotel"></i> Evcil Hayvan Oteli</h5>
+                        <p>Otelinizin anlık doluluk ve oda durum tablosu listelenmektedir.</p>
+                    </div>
+                    <div class="phone-ui-circle-progress">
+                        <div class="svg-container" style="position: relative; display: flex; justify-content: center; align-items: center;">
+                            <svg class="svg-progress-svg" width="90" height="90">
+                                <circle class="svg-progress-bg" cx="45" cy="45" r="38"></circle>
+                                <circle class="svg-progress-val" id="proto-svg-circle" cx="45" cy="45" r="38" stroke-dasharray="238.76" stroke-dashoffset="83.56"></circle>
+                            </svg>
+                            <span class="phone-ui-ring-value" id="proto-ring-val">%65</span>
+                        </div>
+                        <span style="font-size: 0.55rem; color: var(--text-secondary);">Oda Doluluk Oranı</span>
+                    </div>
+                    <button class="phone-ui-btn" id="proto-book-btn"><i class="fa-solid fa-circle-check"></i> Hızlı Rezervasyon Al</button>
                 `;
             } else if (currentCategory === "PetCare") {
                 screenHtml += `
                     <div class="phone-ui-card">
-                        <h5>🐶 Evcil Hayvan Takip</h5>
-                        <p>Dostunuzun günlük hareket ve beslenme takibi aktif.</p>
+                        <h5><i class="fa-solid fa-paw"></i> Evcil Hayvan Takip</h5>
+                        <p>Dostunuzun günlük hareket ve beslenme verileri aktif takipte.</p>
                     </div>
                     <div class="phone-ui-circle-progress">
-                        <div class="phone-ui-ring" style="--ring-fill: 75%;">
+                        <div class="svg-container" style="position: relative; display: flex; justify-content: center; align-items: center;">
+                            <svg class="svg-progress-svg" width="90" height="90">
+                                <circle class="svg-progress-bg" cx="45" cy="45" r="38"></circle>
+                                <circle class="svg-progress-val" cx="45" cy="45" r="38" stroke-dasharray="238.76" stroke-dashoffset="59.69"></circle>
+                            </svg>
                             <span class="phone-ui-ring-value">%75</span>
                         </div>
-                        <span style="font-size: 0.6rem; color: var(--text-secondary);">Günlük Aktivite Hedefi</span>
+                        <span style="font-size: 0.55rem; color: var(--text-secondary);">Günlük Aktivite Skoru</span>
                     </div>
-                    <button class="phone-ui-btn" id="proto-feed-btn"><i class="fa-solid fa-bone"></i> Mama Gönder</button>
+                    <button class="phone-ui-btn" id="proto-feed-btn"><i class="fa-solid fa-bone"></i> Kuru Mama Gönder</button>
+                `;
+            } else if (currentCategory === "EdTech") {
+                screenHtml += `
+                    <div class="phone-ui-card">
+                        <h5><i class="fa-solid fa-graduation-cap"></i> AI Mentor & Sınıf</h5>
+                        <p>Bugünkü ders konuları ve yapay zeka mentörün analizleri hazır.</p>
+                    </div>
+                    <div class="phone-ui-card">
+                        <div class="phone-ui-stat">
+                            <span class="phone-ui-stat-label">Bugünkü Ders</span>
+                            <span class="phone-ui-stat-val">Python OOP</span>
+                        </div>
+                        <div class="phone-ui-stat">
+                            <span class="phone-ui-stat-label">AI Mentor Skoru</span>
+                            <span class="phone-ui-stat-val" style="color: var(--green-glow);">%94 Başarı</span>
+                        </div>
+                    </div>
+                    <button class="phone-ui-btn"><i class="fa-solid fa-play"></i> AI Mentoru Başlat</button>
+                `;
+            } else if (currentCategory === "Booking") {
+                screenHtml += `
+                    <div class="phone-ui-card">
+                        <h5><i class="fa-solid fa-calendar-check"></i> Rezervasyon Asistanı</h5>
+                        <p>Yaklaşan seyahat ve konaklama rezervasyonlarınız.</p>
+                    </div>
+                    <div class="phone-ui-card">
+                        <div class="phone-ui-stat">
+                            <span class="phone-ui-stat-label">Rota/Lokasyon</span>
+                            <span class="phone-ui-stat-val">Antalya, TR</span>
+                        </div>
+                        <div class="phone-ui-stat">
+                            <span class="phone-ui-stat-label">Kalan Zaman</span>
+                            <span class="phone-ui-stat-val">3 Gün Kaldı</span>
+                        </div>
+                    </div>
+                    <button class="phone-ui-btn" id="proto-book-btn"><i class="fa-solid fa-ticket"></i> Bileti Görüntüle</button>
                 `;
             } else if (currentCategory === "Health") {
                 screenHtml += `
                     <div class="phone-ui-card">
-                        <h5>❤️ Kalp & Egzersiz</h5>
+                        <h5><i class="fa-solid fa-heart-pulse"></i> Kalp & Sağlık</h5>
                         <p>Günlük kalori yakma hedefinize ulaşmak üzeresiniz.</p>
                     </div>
                     <div class="phone-ui-circle-progress">
-                        <div class="phone-ui-ring" style="--ring-fill: 68%;">
-                            <span class="phone-ui-ring-value">8,420</span>
+                        <div class="svg-container" style="position: relative; display: flex; justify-content: center; align-items: center;">
+                            <svg class="svg-progress-svg" width="90" height="90">
+                                <circle class="svg-progress-bg" cx="45" cy="45" r="38"></circle>
+                                <circle class="svg-progress-val" cx="45" cy="45" r="38" stroke-dasharray="238.76" stroke-dashoffset="76.40"></circle>
+                            </svg>
+                            <span class="phone-ui-ring-value">8.420</span>
                         </div>
-                        <span style="font-size: 0.6rem; color: var(--text-secondary);">Bugünkü Adım Sayısı</span>
+                        <span style="font-size: 0.55rem; color: var(--text-secondary);">Bugünkü Adım Sayısı</span>
                     </div>
-                    <button class="phone-ui-btn"><i class="fa-solid fa-person-running"></i> Antrenman Başlat</button>
+                    <button class="phone-ui-btn"><i class="fa-solid fa-person-running"></i> Antrenmanı Başlat</button>
+                `;
+            } else if (currentCategory === "FoodDelivery") {
+                screenHtml += `
+                    <div class="phone-ui-card">
+                        <h5><i class="fa-solid fa-burger"></i> Aktif Siparişler</h5>
+                        <p>Siparişiniz yapay zeka rota kuryemiz tarafından teslimata çıkarıldı.</p>
+                    </div>
+                    <div class="phone-ui-card">
+                        <div class="phone-ui-stat">
+                            <span class="phone-ui-stat-label">Kurye Konumu</span>
+                            <span class="phone-ui-stat-val" style="color: var(--term-warn);">Yolda (2 dk)</span>
+                        </div>
+                        <div class="phone-ui-stat">
+                            <span class="phone-ui-stat-label">Sipariş No</span>
+                            <span class="phone-ui-stat-val">#48509</span>
+                        </div>
+                    </div>
+                    <button class="phone-ui-btn" id="proto-delivery-btn"><i class="fa-solid fa-map-location-dot"></i> Haritada Takip Et</button>
                 `;
             } else if (currentCategory === "Ecommerce") {
                 screenHtml += `
                     <div class="phone-ui-card">
-                        <h5>🛒 Mağaza Durumu</h5>
-                        <p>Bugün gelen siparişler ve toplam ciro bilgisi.</p>
+                        <h5><i class="fa-solid fa-store"></i> Mağaza Durum</h5>
+                        <p>Bugün gelen siparişler ve ciro bilgisi.</p>
                     </div>
-                    <div class="phone-ui-card" style="margin-top: 5px;">
+                    <div class="phone-ui-card">
                         <div class="phone-ui-stat">
                             <span class="phone-ui-stat-label">Gelen Siparişler</span>
                             <span class="phone-ui-stat-val">12 Adet</span>
                         </div>
                         <div class="phone-ui-stat">
                             <span class="phone-ui-stat-label">Toplam Satış</span>
-                            <span class="phone-ui-stat-val">$240.00</span>
+                            <span class="phone-ui-stat-val" style="color: var(--green-glow);">$240.00</span>
                         </div>
                     </div>
-                    <button class="phone-ui-btn"><i class="fa-solid fa-plus"></i> Ürün Ekle</button>
+                    <button class="phone-ui-btn"><i class="fa-solid fa-plus"></i> Hızlı Ürün Ekle</button>
                 `;
             } else {
                 screenHtml += `
                     <div class="phone-ui-card">
-                        <h5>🤖 AI Dashboard</h5>
-                        <p>Ajan orkestrasyonu aktif. Girişim fikrinizin tüm süreçleri optimize edildi.</p>
+                        <h5><i class="fa-solid fa-circle-nodes"></i> AI Dashboard</h5>
+                        <p>Çoklu ajan koordinasyon skoru ve sistem sağlık durumu.</p>
                     </div>
                     <div class="phone-ui-circle-progress">
-                        <div class="phone-ui-ring" style="--ring-fill: 92%;">
+                        <div class="svg-container" style="position: relative; display: flex; justify-content: center; align-items: center;">
+                            <svg class="svg-progress-svg" width="90" height="90">
+                                <circle class="svg-progress-bg" cx="45" cy="45" r="38"></circle>
+                                <circle class="svg-progress-val" cx="45" cy="45" r="38" stroke-dasharray="238.76" stroke-dashoffset="19.10"></circle>
+                            </svg>
                             <span class="phone-ui-ring-value">%92</span>
                         </div>
-                        <span style="font-size: 0.6rem; color: var(--text-secondary);">Girişim Hazırlık Skoru</span>
+                        <span style="font-size: 0.55rem; color: var(--text-secondary);">Girişim Hazırlık Skoru</span>
                     </div>
-                    <button class="phone-ui-btn"><i class="fa-solid fa-play"></i> Ajanları Tetikle</button>
+                    <button class="phone-ui-btn"><i class="fa-solid fa-bolt"></i> Ajanları Tetikle</button>
                 `;
             }
         } else if (tab === "stats") {
             screenHtml += `
                 <div class="phone-ui-card">
-                    <h5>📈 Haftalık İstatistikler</h5>
-                    <p>Son 7 güne ait kullanım ve etkileşim oranları grafiği.</p>
+                    <h5><i class="fa-solid fa-chart-line"></i> Haftalık İstatistik</h5>
+                    <p>Son 7 güne ait ciro ve etkileşim oranları grafiği.</p>
                 </div>
                 <div class="phone-ui-card">
                     <div class="phone-ui-stat">
@@ -476,7 +614,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="phone-ui-stat">
                         <span class="phone-ui-stat-label">Çarşamba</span>
-                        <span class="phone-ui-stat-val">%42 artış</span>
+                        <span class="phone-ui-stat-val" style="color: var(--accent-cyan);">%42 artış</span>
                     </div>
                     <div class="phone-ui-stat">
                         <span class="phone-ui-stat-label">Cuma</span>
@@ -484,16 +622,32 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="phone-ui-stat">
                         <span class="phone-ui-stat-label">Pazar</span>
-                        <span class="phone-ui-stat-val">%95 artış</span>
+                        <span class="phone-ui-stat-val" style="color: var(--green-glow);">%95 artış</span>
+                    </div>
+                </div>
+            `;
+        } else if (tab === "chat") {
+            screenHtml += `
+                <div class="phone-chat-container">
+                    <div class="chat-bubble bot">
+                        🤖 <strong>${appTitle} Destek:</strong> Merhaba! Girişim fikrinizle ilgili neyi merak ediyorsunuz?
+                    </div>
+                    <div id="phone-chat-dynamic">
+                        <!-- User message and reply go here -->
+                    </div>
+                    <div class="phone-ui-card" style="padding: 6px; gap: 4px; border-radius: 8px;">
+                        <span style="font-size: 0.5rem; color: var(--text-muted); margin-bottom: 2px;">Soru Seç:</span>
+                        <button class="phone-ui-btn" id="chat-q1-btn" style="padding: 6px; font-size: 0.55rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); text-align: left; justify-content: flex-start; color: var(--text-secondary); box-shadow: none;">💵 Maliyet nedir?</button>
+                        <button class="phone-ui-btn" id="chat-q2-btn" style="padding: 6px; font-size: 0.55rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); text-align: left; justify-content: flex-start; color: var(--text-secondary); box-shadow: none; margin-top: 4px;">🎯 Hedef kitle kim?</button>
                     </div>
                 </div>
             `;
         } else if (tab === "settings") {
             screenHtml += `
                 <div class="phone-ui-card">
-                    <h5>⚙️ Uygulama Ayarları</h5>
+                    <h5><i class="fa-solid fa-gears"></i> Uygulama Ayarı</h5>
                 </div>
-                <div class="phone-ui-card" style="gap: 10px;">
+                <div class="phone-ui-card" style="gap: 8px;">
                     <div class="phone-ui-stat">
                         <span class="phone-ui-stat-label">Koyu Tema</span>
                         <span class="phone-ui-stat-val">Açık</span>
@@ -503,29 +657,66 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span class="phone-ui-stat-val">Aktif</span>
                     </div>
                     <div class="phone-ui-stat">
-                        <span class="phone-ui-stat-label">AI Desteği</span>
-                        <span class="phone-ui-stat-val">Gemini 2.5</span>
+                        <span class="phone-ui-stat-label">AI Sürümü</span>
+                        <span class="phone-ui-stat-val" style="color: var(--accent-cyan);">Gemini 2.5</span>
                     </div>
                 </div>
-                <button class="phone-ui-btn" style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: var(--term-error);"><i class="fa-solid fa-arrow-right-from-bracket"></i> Çıkış Yap</button>
+                <button class="phone-ui-btn" style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: var(--term-error); box-shadow: none;"><i class="fa-solid fa-power-off"></i> Çıkış Yap</button>
             `;
         }
 
+        // Add Bottom App Navigation Bar
+        screenHtml += `
+            <div class="phone-bottom-nav">
+                <i class="fa-solid fa-house nav-icon ${tab === 'home' ? 'active' : ''}" data-nav-btn="home"></i>
+                <i class="fa-solid fa-chart-simple nav-icon ${tab === 'stats' ? 'active' : ''}" data-nav-btn="stats"></i>
+                <i class="fa-solid fa-comment-dots nav-icon ${tab === 'chat' ? 'active' : ''}" data-nav-btn="chat"></i>
+                <i class="fa-solid fa-gear nav-icon ${tab === 'settings' ? 'active' : ''}" data-nav-btn="settings"></i>
+            </div>
+        `;
+
         screen.innerHTML = screenHtml;
 
-        // Attach click actions inside mockup
+        // Attach click actions inside phone navigation
+        const navBtns = screen.querySelectorAll('[data-nav-btn]');
+        navBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetTab = btn.getAttribute('data-nav-btn');
+                switchTab(targetTab);
+            });
+        });
+
+        // Attach click actions inside home views
         const waterBtn = document.getElementById("proto-water-btn");
         if (waterBtn) {
             waterBtn.addEventListener("click", () => {
-                const ring = document.getElementById("proto-moisture-ring");
+                const circle = document.getElementById("proto-svg-circle");
                 const val = document.getElementById("proto-ring-val");
-                if (ring && val) {
-                    ring.style.background = "conic-gradient(var(--accent-cyan) 95%, rgba(255,255,255,0.05) 0)";
-                    ring.style.boxShadow = "0 0 20px rgba(6, 182, 212, 0.4)";
+                if (circle && val) {
+                    // Set moisture to 95%
+                    circle.style.strokeDashoffset = "11.93"; // 238.76 * (1 - 0.95)
                     val.textContent = "%95";
                     val.style.color = "var(--accent-cyan)";
-                    waterBtn.innerHTML = "<i class='fa-solid fa-check'></i> Sulama Yapıldı";
+                    waterBtn.innerHTML = "<i class='fa-solid fa-circle-check'></i> Sulandı!";
                     waterBtn.style.background = "linear-gradient(135deg, #10b981, #059669)";
+                }
+            });
+        }
+
+        const bookBtn = document.getElementById("proto-book-btn");
+        if (bookBtn) {
+            bookBtn.addEventListener("click", () => {
+                const circle = document.getElementById("proto-svg-circle");
+                const val = document.getElementById("proto-ring-val");
+                if (circle && val) {
+                    circle.style.strokeDashoffset = "47.75"; // 238.76 * (1 - 0.80)
+                    val.textContent = "%80";
+                    val.style.color = "var(--green-glow)";
+                    bookBtn.innerHTML = "<i class='fa-solid fa-circle-check'></i> Oda Rezerve Edildi!";
+                    bookBtn.style.background = "linear-gradient(135deg, #10b981, #059669)";
+                } else {
+                    bookBtn.innerHTML = "<i class='fa-solid fa-circle-check'></i> Bilet Alındı!";
+                    bookBtn.style.background = "linear-gradient(135deg, #10b981, #059669)";
                 }
             });
         }
@@ -535,6 +726,45 @@ document.addEventListener('DOMContentLoaded', () => {
             feedBtn.addEventListener("click", () => {
                 feedBtn.innerHTML = "<i class='fa-solid fa-circle-check'></i> Mama Gönderildi!";
                 feedBtn.style.background = "linear-gradient(135deg, #10b981, #059669)";
+            });
+        }
+
+        const deliveryBtn = document.getElementById("proto-delivery-btn");
+        if (deliveryBtn) {
+            deliveryBtn.addEventListener("click", () => {
+                deliveryBtn.innerHTML = "<i class='fa-solid fa-circle-check'></i> Konum Eşlendi!";
+                deliveryBtn.style.background = "linear-gradient(135deg, #10b981, #059669)";
+            });
+        }
+
+        // Attach click actions inside chat views
+        const chatDynamic = document.getElementById("phone-chat-dynamic");
+        const q1Btn = document.getElementById("chat-q1-btn");
+        const q2Btn = document.getElementById("chat-q2-btn");
+
+        if (chatDynamic && q1Btn) {
+            q1Btn.addEventListener("click", () => {
+                chatDynamic.innerHTML = `
+                    <div class="chat-bubble user">
+                        💵 Girişimin tahmini operasyonel maliyeti nedir?
+                    </div>
+                    <div class="chat-bubble bot" style="margin-top: 6px;">
+                        🤖 <strong>Destek Botu:</strong> Bu girişim fikrinin tahmini operasyonel giderlerine finans tabından ulaşabilirsiniz. Genellikle altyapı ve operasyonel kalemler içermektedir.
+                    </div>
+                `;
+            });
+        }
+
+        if (chatDynamic && q2Btn) {
+            q2Btn.addEventListener("click", () => {
+                chatDynamic.innerHTML = `
+                    <div class="chat-bubble user">
+                        🎯 Hedef kitlemiz tam olarak kim?
+                    </div>
+                    <div class="chat-bubble bot" style="margin-top: 6px;">
+                        🤖 <strong>Destek Botu:</strong> Pazar tabında detaylandırıldığı gibi, bu fikrin birincil odak noktası dijital entegrasyonu hedefleyen kullanıcılardır.
+                    </div>
+                `;
             });
         }
     }
