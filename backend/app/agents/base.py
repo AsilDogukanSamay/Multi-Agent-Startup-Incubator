@@ -32,7 +32,7 @@ class BaseAgent:
     """
     Tüm özelleştirilmiş yapay zeka ajanlarının türeyeceği temel sınıf.
     """
-    def __init__(self, name: str, system_instruction: str, model_name: str = "gemini-1.5-flash"):
+    def __init__(self, name: str, system_instruction: str, model_name: str = "gemini-2.5-flash"):
         self.name = name
         self.system_instruction = system_instruction
         self.model_name = model_name
