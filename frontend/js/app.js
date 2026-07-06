@@ -265,6 +265,9 @@ document.addEventListener('DOMContentLoaded', () => {
         reportPlaceholder.classList.add('hidden');
         reportTabs.classList.remove('hidden');
         copyBtn.classList.remove('hidden');
+        
+        // Re-bind mouse glow on dynamic cards
+        initMouseGlowListeners();
     }
 
     // Copy to Clipboard
@@ -282,6 +285,21 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(err => {
                 alert('Kopyalama başarısız oldu: ', err);
-            });
     });
+
+    // Mouse tracking glow effect
+    function initMouseGlowListeners() {
+        document.querySelectorAll('.info-card, .pricing-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+    }
+
+    // Initialize on load
+    initMouseGlowListeners();
 });
