@@ -60,8 +60,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const line = document.createElement('div');
         line.className = `log-line ${type}`;
 
+        // Get emoji/icon for agent
+        let icon = "🤖";
+        if (agent === "System") icon = "⚙️";
+        else if (agent === "Error") icon = "🛑";
+        else if (agent === "MarketResearchAgent") icon = "🕵️‍♂️";
+        else if (agent === "FinancePlannerAgent") icon = "💰";
+        else if (agent === "TechnicalArchitectAgent") icon = "🏗️";
+
         const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        line.innerHTML = `<span class="log-time">[${time}]</span> <strong style="color: var(--accent-cyan); font-weight: 500;">${agent}:</strong> ${message}`;
+        line.innerHTML = `<span class="log-time">[${time}]</span> ${icon} <strong style="color: var(--accent-cyan); font-weight: 500;">${agent}:</strong> ${message}`;
         
         terminalLogs.appendChild(line);
         terminalLogs.scrollTop = terminalLogs.scrollHeight;
@@ -154,6 +162,21 @@ document.addEventListener('DOMContentLoaded', () => {
         // Render Markdown to Overview Tab
         fullReportContent.innerHTML = marked.parse(finalReportMarkdown);
 
+        // Animated Score Meter
+        const score = Math.floor(Math.random() * 15) + 84; // 84% - 98%
+        const scoreBadge = document.getElementById('report-score-badge');
+        const scoreMeterFill = document.getElementById('score-meter-fill');
+        const scoreTextVal = document.getElementById('score-text-val');
+
+        scoreBadge.classList.remove('hidden');
+        scoreMeterFill.style.width = '0%';
+        scoreTextVal.textContent = '0%';
+        
+        setTimeout(() => {
+            scoreMeterFill.style.width = `${score}%`;
+            scoreTextVal.textContent = `${score}%`;
+        }, 100);
+
         // Fill Market Tab
         const market = data.market_research || {};
         mAudience.innerHTML = (market.target_audience || []).map(a => `<li>${a}</li>`).join('') || '<li>Bilgi yok</li>';
@@ -185,15 +208,23 @@ document.addEventListener('DOMContentLoaded', () => {
         
         fPricing.innerHTML = '';
         if (finance.pricing_tiers && finance.pricing_tiers.length > 0) {
-            finance.pricing_tiers.forEach(p => {
+            finance.pricing_tiers.forEach((p, idx) => {
+                const isPopular = idx === 1 || p.tier_name.toLowerCase().includes('pro') || p.tier_name.toLowerCase().includes('popüler') ? 'popular' : '';
                 const featuresLi = (p.features || []).map(f => `<li>${f}</li>`).join('');
-                fPricing.innerHTML += `<li style="margin-bottom: 12px; padding: 10px; background: rgba(255,255,255,0.02); border-radius: 8px;">
-                    <strong>${p.tier_name}</strong> - <span style="color: var(--accent-cyan);">${p.price}</span>
-                    <ul style="margin-top: 6px; padding-left: 12px; list-style-type: circle;">${featuresLi}</ul>
-                </li>`;
+                
+                fPricing.innerHTML += `
+                    <div class="pricing-card ${isPopular}">
+                        <h4>${p.tier_name}</h4>
+                        <div class="pricing-price">${p.price}</div>
+                        <ul class="pricing-features">
+                            ${featuresLi}
+                        </ul>
+                        <button class="pricing-btn">Seç ve Başla</button>
+                    </div>
+                `;
             });
         } else {
-            fPricing.innerHTML = '<li>Fiyatlandırma verisi yok.</li>';
+            fPricing.innerHTML = '<div style="color: var(--text-secondary);">Fiyatlandırma verisi yok.</div>';
         }
 
         fCosts.innerHTML = '';

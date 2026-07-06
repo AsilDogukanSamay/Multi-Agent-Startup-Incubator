@@ -707,3 +707,230 @@ textarea:focus {
 .endpoint-list li::before {
     display: none;
 }
+
+/* Visual Enhancements & Upgrades */
+
+/* Secondary Background Glow */
+.glass-bg-glow-right {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, rgba(139, 92, 246, 0.03) 50%, rgba(0, 0, 0, 0) 100%);
+    bottom: -100px;
+    right: -100px;
+    z-index: -1;
+    filter: blur(80px);
+    pointer-events: none;
+    animation: pulseGlowRight 20s infinite alternate;
+}
+
+@keyframes pulseGlowRight {
+    0% { transform: scale(1) translate(0, 0); }
+    100% { transform: scale(1.1) translate(-50px, -100px); }
+}
+
+/* Score Meter Badge */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.score-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 6px 14px;
+    border-radius: 50px;
+    border: 1px solid var(--panel-border);
+    font-size: 0.85rem;
+    animation: fadeIn 0.4s ease;
+}
+
+.score-label {
+    color: var(--text-secondary);
+}
+
+.score-meter-container {
+    width: 80px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.score-meter-fill {
+    width: 0%;
+    height: 100%;
+    background: var(--accent-gradient);
+    border-radius: 10px;
+    transition: width 1.5s cubic-bezier(0.1, 0.8, 0.25, 1);
+    box-shadow: 0 0 8px var(--accent-cyan);
+}
+
+.score-text {
+    font-weight: 700;
+    color: var(--accent-cyan);
+}
+
+/* Info Cards Glow and 3D Interaction */
+.info-card, .swot-box, .pricing-card {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.info-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(6, 182, 212, 0.25);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), 0 0 15px rgba(6, 182, 212, 0.05);
+}
+
+/* SWOT glowing shadows on hover */
+.swot-box.strengths:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.swot-box.weaknesses:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.swot-box.opportunities:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.swot-box.threats:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.15);
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+/* Premium Pricing Cards Grid Layout */
+.pricing-section-card {
+    margin-bottom: 24px;
+}
+
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 12px;
+}
+
+.pricing-card {
+    background: rgba(255, 255, 255, 0.015);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+.pricing-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--accent-purple);
+    background: rgba(255, 255, 255, 0.025);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(124, 58, 237, 0.1);
+}
+
+.pricing-card.popular {
+    border-color: rgba(124, 58, 237, 0.4);
+    background: rgba(124, 58, 237, 0.02);
+}
+
+.pricing-card.popular::before {
+    content: "ÖNERİLEN";
+    position: absolute;
+    top: 12px;
+    right: -25px;
+    background: var(--accent-gradient);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 2px 25px;
+    transform: rotate(45deg);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.pricing-card h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+}
+
+.pricing-price {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--accent-cyan);
+    margin-bottom: 16px;
+}
+
+.pricing-price span {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+.pricing-features {
+    list-style: none !important;
+    padding: 0 !important;
+    margin-bottom: 24px !important;
+    flex-grow: 1;
+}
+
+.pricing-features li {
+    font-size: 0.8rem !important;
+    color: var(--text-secondary);
+    margin-bottom: 8px !important;
+    padding-left: 18px !important;
+    position: relative !important;
+}
+
+.pricing-features li::before {
+    content: "✓" !important;
+    position: absolute !important;
+    left: 0 !important;
+    color: var(--green-glow) !important;
+    font-weight: bold !important;
+}
+
+.pricing-btn {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.03);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.pricing-card:hover .pricing-btn {
+    background: var(--accent-gradient);
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
+
+/* Enhanced tech badges layout */
+.tech-stack-badges span {
+    display: inline-block;
+    margin: 4px;
+    transition: all 0.2s ease;
+}
+
+.tech-stack-badges span:hover {
+    transform: scale(1.05);
+    border-color: var(--accent-cyan);
+    background: rgba(6, 182, 212, 0.08);
+    box-shadow: 0 0 8px rgba(6, 182, 212, 0.2);
+}

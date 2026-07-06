@@ -17,6 +17,7 @@
 </head>
 <body>
     <div class="glass-bg-glow"></div>
+    <div class="glass-bg-glow-right"></div>
     <div class="container">
         <!-- Header -->
         <header>
@@ -68,9 +69,18 @@
             <div class="panel output-panel">
                 <div class="output-header">
                     <h2><i class="fa-solid fa-chart-line"></i> Analiz Raporu</h2>
-                    <button id="copy-btn" class="icon-btn hidden" title="Markdown Raporunu Kopyala">
-                        <i class="fa-regular fa-copy"></i> Kopyala
-                    </button>
+                    <div class="header-actions">
+                        <div class="score-badge hidden" id="report-score-badge">
+                            <span class="score-label">Fikir Puanı:</span>
+                            <div class="score-meter-container">
+                                <div class="score-meter-fill" id="score-meter-fill"></div>
+                            </div>
+                            <span class="score-text" id="score-text-val">0%</span>
+                        </div>
+                        <button id="copy-btn" class="icon-btn hidden" title="Markdown Raporunu Kopyala">
+                            <i class="fa-regular fa-copy"></i> Kopyala
+                        </button>
+                    </div>
                 </div>
                 
                 <!-- Report Tabs -->
@@ -142,10 +152,17 @@
                                 <ul id="f-monetization"></ul>
                             </div>
                             <div class="info-card">
-                                <h3><i class="fa-solid fa-tags"></i> Fiyatlandırma Modelleri</h3>
-                                <ul id="f-pricing"></ul>
+                                <h3><i class="fa-solid fa-lightbulb"></i> Finansal İpuçları</h3>
+                                <ul id="f-tips"></ul>
                             </div>
                         </div>
+                        
+                        <!-- Premium Pricing Cards Grid -->
+                        <div class="info-card pricing-section-card">
+                            <h3><i class="fa-solid fa-tags"></i> Fiyatlandırma Paketleri (Pricing Plans)</h3>
+                            <div class="pricing-grid" id="f-pricing"></div>
+                        </div>
+
                         <div class="info-card table-card">
                             <h3><i class="fa-solid fa-calculator"></i> Tahmini Operasyonel Giderler</h3>
                             <table id="f-costs">
@@ -158,10 +175,6 @@
                                 </thead>
                                 <tbody></tbody>
                             </table>
-                        </div>
-                        <div class="info-card">
-                            <h3><i class="fa-solid fa-lightbulb"></i> Finansal İpuçları</h3>
-                            <ul id="f-tips"></ul>
                         </div>
                     </div>
 
