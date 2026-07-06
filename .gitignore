@@ -1,0 +1,29 @@
+# Python virtual environment
+venv/
+.venv/
+env/
+ENV/
+
+# Python cache
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment variables (secret keys)
+.env
+
+# IDE / Editor settings
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store

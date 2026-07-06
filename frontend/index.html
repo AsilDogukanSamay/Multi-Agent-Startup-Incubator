@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Agent Startup Incubator</title>
+    <!-- Google Fonts: Outfit & Fira Code for Terminal -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Marked.js for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="glass-bg-glow"></div>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <i class="fa-solid fa-network-wired logo-icon"></i>
+                <h1>Startup<span>Incubator</span></h1>
+            </div>
+            <p class="subtitle">Çoklu Ajanlı Yapay Zeka Kuluçka Merkezi</p>
+            <div class="api-status">
+                <span class="status-dot online"></span>
+                <span>AI Agent Engine: Online</span>
+            </div>
+        </header>
+
+        <!-- Main Content Grid -->
+        <div class="app-grid">
+            <!-- Left Panel: Input & Live Agent Terminal -->
+            <div class="panel input-panel">
+                <h2><i class="fa-solid fa-lightbulb"></i> Fikrini Ateşle</h2>
+                <p class="panel-desc">Girişim fikrini ham haliyle yaz, yapay zeka ajanlarımız pazarını, finansını ve mimarisini tasarlasın.</p>
+                
+                <div class="input-group">
+                    <textarea id="idea-input" placeholder="Örn: Ev bitkilerinin sağlığını analiz eden ve bakım önerileri sunan yapay zeka destekli bir mobil uygulama..."></textarea>
+                    <button id="analyze-btn" class="primary-btn">
+                        <span class="btn-text">Kuluçka Sürecini Başlat</span>
+                        <i class="fa-solid fa-rocket btn-icon"></i>
+                        <span class="loader hidden"></span>
+                    </button>
+                </div>
+
+                <!-- Agent Live Console -->
+                <div class="terminal-container">
+                    <div class="terminal-header">
+                        <div class="terminal-buttons">
+                            <span class="t-btn close"></span>
+                            <span class="t-btn minimize"></span>
+                            <span class="t-btn expand"></span>
+                        </div>
+                        <div class="terminal-title">Ajan Konsolu (Agent Console)</div>
+                        <div class="terminal-status" id="agent-status">Hazır</div>
+                    </div>
+                    <div class="terminal-body" id="terminal-logs">
+                        <div class="log-line system"><span class="log-time">[System]</span> Ajanlar hazırlandı. Fikir bekleniyor...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Report Output -->
+            <div class="panel output-panel">
+                <div class="output-header">
+                    <h2><i class="fa-solid fa-chart-line"></i> Analiz Raporu</h2>
+                    <button id="copy-btn" class="icon-btn hidden" title="Markdown Raporunu Kopyala">
+                        <i class="fa-regular fa-copy"></i> Kopyala
+                    </button>
+                </div>
+                
+                <!-- Report Tabs -->
+                <div class="tabs-container hidden" id="report-tabs">
+                    <div class="tabs">
+                        <button class="tab-btn active" data-tab="tab-overview"><i class="fa-solid fa-house"></i> Özet</button>
+                        <button class="tab-btn" data-tab="tab-market"><i class="fa-solid fa-users"></i> Pazar & SWOT</button>
+                        <button class="tab-btn" data-tab="tab-finance"><i class="fa-solid fa-coins"></i> Finans</button>
+                        <button class="tab-btn" data-tab="tab-tech"><i class="fa-solid fa-layer-group"></i> Mimari</button>
+                    </div>
+
+                    <div class="tab-content active" id="tab-overview">
+                        <div class="markdown-body" id="full-report-content">
+                            <!-- Raw Markdown compiled here -->
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="tab-market">
+                        <div class="card-grid">
+                            <div class="info-card">
+                                <h3><i class="fa-solid fa-users-viewfinder"></i> Hedef Kitle</h3>
+                                <ul id="m-audience"></ul>
+                            </div>
+                            <div class="info-card">
+                                <h3><i class="fa-solid fa-arrow-trend-up"></i> Pazar Trendleri</h3>
+                                <ul id="m-trends"></ul>
+                            </div>
+                        </div>
+                        <div class="info-card table-card">
+                            <h3><i class="fa-solid fa-arrows-left-right"></i> Rekabet Analizi</h3>
+                            <table id="m-competitors">
+                                <thead>
+                                    <tr>
+                                        <th>Rakip</th>
+                                        <th>Güçlü Yönü</th>
+                                        <th>Bizim Üstünlüğümüz</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <div class="info-card swot-card">
+                            <h3><i class="fa-solid fa-arrows-split-up-and-left"></i> SWOT Analizi</h3>
+                            <div class="swot-grid">
+                                <div class="swot-box strengths">
+                                    <h4>🟢 Güçlü Yönler</h4>
+                                    <ul id="swot-s"></ul>
+                                </div>
+                                <div class="swot-box weaknesses">
+                                    <h4>🔴 Zayıf Yönler</h4>
+                                    <ul id="swot-w"></ul>
+                                </div>
+                                <div class="swot-box opportunities">
+                                    <h4>🔵 Fırsatlar</h4>
+                                    <ul id="swot-o"></ul>
+                                </div>
+                                <div class="swot-box threats">
+                                    <h4>⚠️ Tehditler</h4>
+                                    <ul id="swot-t"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="tab-finance">
+                        <div class="card-grid">
+                            <div class="info-card">
+                                <h3><i class="fa-solid fa-wallet"></i> Gelir Kanalları</h3>
+                                <ul id="f-monetization"></ul>
+                            </div>
+                            <div class="info-card">
+                                <h3><i class="fa-solid fa-tags"></i> Fiyatlandırma Modelleri</h3>
+                                <ul id="f-pricing"></ul>
+                            </div>
+                        </div>
+                        <div class="info-card table-card">
+                            <h3><i class="fa-solid fa-calculator"></i> Tahmini Operasyonel Giderler</h3>
+                            <table id="f-costs">
+                                <thead>
+                                    <tr>
+                                        <th>Gider Kalemi</th>
+                                        <th>Tutar</th>
+                                        <th>Sıklık</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <div class="info-card">
+                            <h3><i class="fa-solid fa-lightbulb"></i> Finansal İpuçları</h3>
+                            <ul id="f-tips"></ul>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="tab-tech">
+                        <div class="info-card">
+                            <h3><i class="fa-solid fa-microchip"></i> Teknoloji Seçimleri (Tech Stack)</h3>
+                            <div class="tech-stack-badges">
+                                <div class="badge-group"><strong>Frontend:</strong> <span id="t-frontend"></span></div>
+                                <div class="badge-group"><strong>Backend:</strong> <span id="t-backend"></span></div>
+                                <div class="badge-group"><strong>Veritabanı:</strong> <span id="t-db"></span></div>
+                                <div class="badge-group"><strong>Bulut & Barındırma:</strong> <span id="t-host"></span></div>
+                                <div class="badge-group"><strong>AI Servisleri:</strong> <span id="t-ai"></span></div>
+                            </div>
+                        </div>
+                        <div class="info-card">
+                            <h3><i class="fa-solid fa-circle-nodes"></i> Kritik API Uç Noktaları</h3>
+                            <ul class="endpoint-list" id="t-endpoints"></ul>
+                        </div>
+                        <div class="info-card">
+                            <h3><i class="fa-solid fa-sitemap"></i> Mimari Özet</h3>
+                            <p id="t-summary"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Report Placeholder -->
+                <div class="report-placeholder" id="report-placeholder">
+                    <i class="fa-solid fa-folder-open placeholder-icon"></i>
+                    <p>Fikrinizi kuluçkaya yatırdığınızda, ajanların detaylı raporları ve yol haritası burada görünecektir.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Script -->
+    <script src="/js/app.js"></script>
+</body>
+</html>
