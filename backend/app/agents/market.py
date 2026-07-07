@@ -1,6 +1,7 @@
 import json
 from typing import Any, Dict
 from backend.app.agents.base import BaseAgent, SharedMemory
+from backend.app.agents.mock_generator import MockGenerator
 
 class MarketResearchAgent(BaseAgent):
     def __init__(self):
@@ -33,24 +34,11 @@ class MarketResearchAgent(BaseAgent):
         
         # Handle mock mode or API key error
         if "[MOCK MODE" in raw_output or "[ERROR" in raw_output:
-            mock_data = {
-                "target_audience": ["Genç profesyoneller", "Teknoloji meraklıları", "Ev kullanıcıları"],
-                "competitors": [
-                    {"name": "Mevcut Geleneksel Çözümler", "advantage": "Pazarda bilinirlik ve güven", "disadvantage": "Hız ve yapay zeka entegrasyonu eksikliği"},
-                    {"name": "Benzer Alternatif Uygulamalar", "advantage": "Basit arayüz", "disadvantage": "Kişiselleştirme ve otonom ajan desteğinin olmaması"}
-                ],
-                "market_trends": ["Yapay zeka ile kişiselleştirme", "Mobil öncelikli çözümler", "Abonelik tabanlı hizmet modelleri"],
-                "swot": {
-                    "strengths": ["Esnek ve dinamik mimari", "Gelişmiş AI entegrasyonu", "Düşük operasyonel maliyet"],
-                    "weaknesses": ["Yeni marka bilinirliği", "Başlangıç verisi eksikliği"],
-                    "opportunities": ["Büyüyen yapay zeka pazarı", "Niş kullanıcı kitlelerine ulaşma kolaylığı"],
-                    "threats": ["Büyük rakiplerin benzer özellikleri hızlıca kopyalaması", "Bulut servis maliyetlerinin artışı"]
-                },
-                "is_mock": True,
-                "message": raw_output
-            }
+            mock_data = MockGenerator.generate_market(memory.startup_idea)
+            mock_data["is_mock"] = True
+            mock_data["message"] = raw_output
             memory.market_research = mock_data
-            memory.add_log(self.name, "Pazar araştırması simüle edildi (Mock Veri).", mock_data)
+            memory.add_log(self.name, "Pazar araştırması simüle edildi (Dinamik Mock Veri).", mock_data)
             return mock_data
 
         # Clean JSON markdown styling if present

@@ -1,6 +1,7 @@
 import json
 from typing import Any, Dict
 from backend.app.agents.base import BaseAgent, SharedMemory
+from backend.app.agents.mock_generator import MockGenerator
 
 class TechnicalArchitectAgent(BaseAgent):
     def __init__(self):
@@ -46,30 +47,11 @@ class TechnicalArchitectAgent(BaseAgent):
         
         # Handle mock mode or API key error
         if "[MOCK MODE" in raw_output or "[ERROR" in raw_output:
-            mock_data = {
-                "tech_stack": {
-                    "frontend": ["HTML5/CSS3", "Vanilla Javascript", "Tailwind CSS"],
-                    "backend": ["Python", "FastAPI (Asenkron API framework)", "Uvicorn"],
-                    "database": ["PostgreSQL (İlişkisel veritabanı)", "Redis (Hızlı önbellekleme ve oturum yönetimi)"],
-                    "cloud_hosting": ["Render (Backend barındırma)", "Vercel (Frontend barındırma)", "Supabase (MaaS)"],
-                    "ai_models": ["Gemini 1.5 Flash (Metin ve analiz için hızlı/uygun maliyetli model)"]
-                },
-                "database_schema": [
-                    {"table_name": "users", "columns": ["id (UUID) - Primary Key", "email (VARCHAR) - Kullanıcı e-postası", "created_at (TIMESTAMP) - Kayıt tarihi"]},
-                    {"table_name": "projects", "columns": ["id (UUID) - Primary Key", "user_id (UUID) - Foreign Key -> users.id", "title (VARCHAR) - Girişim adı", "idea_description (TEXT) - Ham açıklama"]},
-                    {"table_name": "analyses", "columns": ["id (UUID) - Primary Key", "project_id (UUID) - Foreign Key -> projects.id", "market_data (JSON) - Pazar analizi", "finance_data (JSON) - Finansal plan", "created_at (TIMESTAMP) - Analiz zamanı"]}
-                ],
-                "api_endpoints": [
-                    {"method": "POST", "path": "/api/v1/auth/register", "description": "Yeni kullanıcı kaydı oluşturur."},
-                    {"method": "POST", "path": "/api/v1/incubator/analyze", "description": "Girişim fikrini alır ve ajanları çalıştırarak analiz raporu üretir."},
-                    {"method": "GET", "path": "/api/v1/incubator/projects", "description": "Kullanıcının geçmiş tüm projelerini ve raporlarını listeler."}
-                ],
-                "architecture_summary": "Sistem, istemcinin (Frontend) FastAPI backend sunucusuyla asenkron olarak haberleştiği, AI işlemlerinin kuyruğa alındığı ve verilerin PostgreSQL'de saklandığı ölçeklenebilir ve modern bir monolitik mimariye sahiptir.",
-                "is_mock": True,
-                "message": raw_output
-            }
+            mock_data = MockGenerator.generate_tech(memory.startup_idea, memory.market_research or {}, memory.financial_plan or {})
+            mock_data["is_mock"] = True
+            mock_data["message"] = raw_output
             memory.technical_architecture = mock_data
-            memory.add_log(self.name, "Yazılım mimarisi tasarımı simüle edildi (Mock Veri).", mock_data)
+            memory.add_log(self.name, "Yazılım mimarisi planlaması simüle edildi (Dinamik Mock Veri).", mock_data)
             return mock_data
 
         # Clean JSON markdown styling if present

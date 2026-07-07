@@ -1,6 +1,7 @@
 import json
 from typing import Any, Dict
 from backend.app.agents.base import BaseAgent, SharedMemory
+from backend.app.agents.mock_generator import MockGenerator
 
 class FinancePlannerAgent(BaseAgent):
     def __init__(self):
@@ -38,26 +39,11 @@ class FinancePlannerAgent(BaseAgent):
         
         # Handle mock mode or API key error
         if "[MOCK MODE" in raw_output or "[ERROR" in raw_output:
-            mock_data = {
-                "monetization_models": ["SaaS Abonelik", "Kullanım Başına Ödeme (Pay-as-you-go)", "B2B Lisanslama"],
-                "pricing_tiers": [
-                    {"tier_name": "Başlangıç (Basic)", "price": "$9 / Ay", "features": ["Temel AI Analizleri", "Sınırlı Bellek", "E-posta Desteği"]},
-                    {"tier_name": "Profesyonel (Pro)", "price": "$29 / Ay", "features": ["Gelişmiş AI Ajanları", "Sınırsız Hafıza Entegrasyonu", "7/24 Destek", "API Erişimi"]}
-                ],
-                "estimated_costs": [
-                    {"item": "Bulut Sunucu & API Kullanım Giderleri", "amount": "$150 / Ay", "frequency": "Aylık"},
-                    {"item": "Pazarlama ve Reklam Giderleri", "amount": "$500 / Ay", "frequency": "Aylık"},
-                    {"item": "Marka Tescili ve Hukuki Kurulum", "amount": "$1000", "frequency": "Tek seferlik"}
-                ],
-                "financial_tips": [
-                    "Başlangıçta sunucu maliyetlerini optimize etmek için ücretsiz/uygun fiyatlı API paketlerini kullanın.",
-                    "Pazarlama bütçesini doğrudan hedef kitle analizindeki niş gruplara yönelik harcayın."
-                ],
-                "is_mock": True,
-                "message": raw_output
-            }
+            mock_data = MockGenerator.generate_finance(memory.startup_idea, memory.market_research or {})
+            mock_data["is_mock"] = True
+            mock_data["message"] = raw_output
             memory.financial_plan = mock_data
-            memory.add_log(self.name, "Finansal planlama simüle edildi (Mock Veri).", mock_data)
+            memory.add_log(self.name, "Finansal planlama simüle edildi (Dinamik Mock Veri).", mock_data)
             return mock_data
 
         # Clean JSON markdown styling if present
