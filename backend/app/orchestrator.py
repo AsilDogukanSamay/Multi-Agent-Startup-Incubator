@@ -3,12 +3,14 @@ from backend.app.agents.base import SharedMemory
 from backend.app.agents.market import MarketResearchAgent
 from backend.app.agents.finance import FinancePlannerAgent
 from backend.app.agents.technical import TechnicalArchitectAgent
+from backend.app.agents.prototype import PrototypeDesignerAgent
 
 class Orchestrator:
     def __init__(self):
         self.market_agent = MarketResearchAgent()
         self.finance_agent = FinancePlannerAgent()
         self.tech_agent = TechnicalArchitectAgent()
+        self.proto_agent = PrototypeDesignerAgent()
 
     async def run_incubator(self, startup_idea: str) -> SharedMemory:
         """
@@ -33,7 +35,12 @@ class Orchestrator:
         await asyncio.to_thread(self.tech_agent.run, memory)
         await asyncio.sleep(1)
         
-        # 4. Nihai Markdown Raporu Oluşturma
+        # 4. UI/UX Prototip Tasarım Ajanı
+        memory.add_log("Orchestrator", "UI/UX Prototip Tasarım Ajanı (PrototypeDesignerAgent) tetiklendi.")
+        await asyncio.to_thread(self.proto_agent.run, memory)
+        await asyncio.sleep(1)
+        
+        # 5. Nihai Markdown Raporu Oluşturma
         memory.add_log("Orchestrator", "Nihai Girişim Raporu derleniyor...")
         memory.final_report = self._generate_final_report(memory)
         memory.add_log("Orchestrator", "Süreç tamamlandı. Rapor başarıyla oluşturuldu!")

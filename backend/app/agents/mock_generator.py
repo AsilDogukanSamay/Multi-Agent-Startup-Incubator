@@ -457,3 +457,270 @@ class MockGenerator:
             "api_endpoints": endpoints,
             "architecture_summary": summary
         }
+
+    @classmethod
+    def generate_prototype(cls, idea: str) -> Dict[str, Any]:
+        idea_lower = idea.lower()
+        kws = cls.get_keywords(idea)
+        kw_title = cls.clean_text(idea.split()[0]) if idea.split() else "Girişim"
+        if len(kw_title) > 15:
+            kw_title = kw_title[:12] + "..."
+            
+        main_kw = kws[0] if kws else "hizmet"
+        
+        # Categorize
+        if any(w in idea_lower for w in ["tarım", "sulama", "bitki", "bahçe", "tarl"]):
+            app_name = "AgriPulse"
+            primary_color = "#06b6d4"
+            screens = {
+                "main": {
+                    "navigation_title": "Genel Durum",
+                    "layout": [
+                        { "type": "text", "text": "🌱 Akıllı Tarla Takibi", "size": "large" },
+                        { "type": "chart", "chart_type": "ring", "value": 42, "label": "Nem Oranı" },
+                        { "type": "card", "title": "Toprak Durumu", "desc": "Nem kritik seviyede (%42). Sulama önerilir." },
+                        { "type": "button", "label": "Vana Kontrollerine Git", "action": "navigate", "target": "controls" }
+                    ]
+                },
+                "controls": {
+                    "navigation_title": "Vana Yönetimi",
+                    "layout": [
+                        { "type": "text", "text": "💦 Sulama Kontrolü", "size": "medium" },
+                        { "type": "input", "placeholder": "Sulama Süresi (Dk)", "input_type": "number" },
+                        { "type": "card", "title": "Vana Seçimi", "desc": "Ana Vana #1 (Kapalı)" },
+                        { "type": "button", "label": "Sulamayı Başlat", "action": "navigate", "target": "success" }
+                    ]
+                },
+                "success": {
+                    "navigation_title": "İşlem Tamam",
+                    "layout": [
+                        { "type": "text", "text": "✅ Sulama Başlatıldı", "size": "large" },
+                        { "type": "card", "title": "Su Akışı Aktif", "desc": "Belirtilen süre boyunca vana açık tutulacak." },
+                        { "type": "button", "label": "Ana Sayfaya Dön", "action": "navigate", "target": "main" }
+                    ]
+                }
+            }
+        elif any(w in idea_lower for w in ["pet", "hayvan", "köpek", "kedi", "veteriner"]):
+            app_name = "PetCare"
+            primary_color = "#8b5cf6"
+            screens = {
+                "main": {
+                    "navigation_title": "Dostum",
+                    "layout": [
+                        { "type": "text", "text": "🐶 Evcil Hayvan Durumu", "size": "large" },
+                        { "type": "chart", "chart_type": "ring", "value": 75, "label": "Günlük Aktivite" },
+                        { "type": "card", "title": "Sağlık & Beslenme", "desc": "Bugünkü kalori hedefine ulaşıldı. Kuru mama azaldı." },
+                        { "type": "button", "label": "Mama Gönderimine Git", "action": "navigate", "target": "feed" }
+                    ]
+                },
+                "feed": {
+                    "navigation_title": "Mama Gönder",
+                    "layout": [
+                        { "type": "text", "text": "🍖 Otomatik Mama Kabı", "size": "medium" },
+                        { "type": "input", "placeholder": "Mama Gramajı (gr)", "input_type": "number" },
+                        { "type": "card", "title": "Mama Kabı Durumu", "desc": "Hazne Doluluk Oranı: %30" },
+                        { "type": "button", "label": "Porsiyon Gönder", "action": "navigate", "target": "success" }
+                    ]
+                },
+                "success": {
+                    "navigation_title": "Gönderildi",
+                    "layout": [
+                        { "type": "text", "text": "🎉 Mama Döküldü!", "size": "large" },
+                        { "type": "card", "title": "Afiyet Olsun", "desc": "Mama kabına başarıyla porsiyon gönderildi." },
+                        { "type": "button", "label": "Ana Sayfaya Dön", "action": "navigate", "target": "main" }
+                    ]
+                }
+            }
+        elif any(w in idea_lower for w in ["eğitim", "okul", "öğrenci", "ders", "kurs", "akademi"]):
+            app_name = "EduAI"
+            primary_color = "#3b82f6"
+            screens = {
+                "main": {
+                    "navigation_title": "Eğitim Paneli",
+                    "layout": [
+                        { "type": "text", "text": "📚 AI Kişisel Mentör", "size": "large" },
+                        { "type": "chart", "chart_type": "ring", "value": 94, "label": "Haftalık Başarı" },
+                        { "type": "card", "title": "Sıradaki Ders", "desc": "Python Nesne Yönelimli Programlama (OOP)" },
+                        { "type": "button", "label": "Ders Çalışmaya Başla", "action": "navigate", "target": "lesson" }
+                    ]
+                },
+                "lesson": {
+                    "navigation_title": "Python OOP",
+                    "layout": [
+                        { "type": "text", "text": "📝 Python Sınıf Egzersizi", "size": "medium" },
+                        { "type": "input", "placeholder": "Kodunu buraya yaz...", "input_type": "text" },
+                        { "type": "card", "title": "Egzersiz Sorusu", "desc": "Bir 'Car' sınıfı oluşturup 'speed' niteliği ekleyin." },
+                        { "type": "button", "label": "Kodu Test Et", "action": "navigate", "target": "success" }
+                    ]
+                },
+                "success": {
+                    "navigation_title": "Harika!",
+                    "layout": [
+                        { "type": "text", "text": "🔥 Tebrikler, Doğru!", "size": "large" },
+                        { "type": "card", "title": "AI Mentor Raporu", "desc": "Sınıf yapısını kusursuz tasarladın. +20 Puan kazandın." },
+                        { "type": "button", "label": "Ana Sayfaya Dön", "action": "navigate", "target": "main" }
+                    ]
+                }
+            }
+        elif any(w in idea_lower for w in ["otel", "rezervasyon", "tatil", "seyahat", "bilet"]):
+            app_name = "Bookify"
+            primary_color = "#f59e0b"
+            screens = {
+                "main": {
+                    "navigation_title": "Gezgin",
+                    "layout": [
+                        { "type": "text", "text": "✈️ Seyahat Asistanı", "size": "large" },
+                        { "type": "card", "title": "Yaklaşan Seyahat", "desc": "Antalya Tatili (3 Gün Sonra)" },
+                        { "type": "list", "items": ["Hotel Sun Queen - Standart Oda", "Uçak Bileti - TK408", "Müze Kart Giriş Hakkı"] },
+                        { "type": "button", "label": "Yeni Rezervasyon Yap", "action": "navigate", "target": "book" }
+                    ]
+                },
+                "book": {
+                    "navigation_title": "Arama Yap",
+                    "layout": [
+                        { "type": "text", "text": "🔍 Otel veya Bilet Bul", "size": "medium" },
+                        { "type": "input", "placeholder": "Gideceğiniz Şehir", "input_type": "text" },
+                        { "type": "input", "placeholder": "Kişi Sayısı", "input_type": "number" },
+                        { "type": "button", "label": "Fiyatları Listele", "action": "navigate", "target": "success" }
+                    ]
+                },
+                "success": {
+                    "navigation_title": "Rezervasyon Alındı",
+                    "layout": [
+                        { "type": "text", "text": "🎟️ Biletiniz Hazır!", "size": "large" },
+                        { "type": "card", "title": "İşlem Başarılı", "desc": "Antalya seyahat paketiniz onaylandı. QR kodunuz üretildi." },
+                        { "type": "button", "label": "Ana Sayfaya Dön", "action": "navigate", "target": "main" }
+                    ]
+                }
+            }
+        elif any(w in idea_lower for w in ["sağlık", "diyet", "spor", "fit", "hastane", "doktor", "ilaç"]):
+            app_name = "LifeFit"
+            primary_color = "#10b981"
+            screens = {
+                "main": {
+                    "navigation_title": "Sağlığım",
+                    "layout": [
+                        { "type": "text", "text": "❤️ Kalp ve Egzersiz", "size": "large" },
+                        { "type": "chart", "chart_type": "ring", "value": 68, "label": "Günlük Adım Oranı" },
+                        { "type": "card", "title": "Bugünkü İlerleme", "desc": "8.420 Adım Atıldı. 400 Kalori Yakıldı." },
+                        { "type": "button", "label": "Egzersiz Kaydet", "action": "navigate", "target": "log" }
+                    ]
+                },
+                "log": {
+                    "navigation_title": "Egzersiz Ekle",
+                    "layout": [
+                        { "type": "text", "text": "🏋️ Egzersiz Detayları", "size": "medium" },
+                        { "type": "input", "placeholder": "Egzersiz Adı (Örn: Koşu)", "input_type": "text" },
+                        { "type": "input", "placeholder": "Süre (Dakika)", "input_type": "number" },
+                        { "type": "button", "label": "Kaydet ve Analiz Et", "action": "navigate", "target": "success" }
+                    ]
+                },
+                "success": {
+                    "navigation_title": "Kaydedildi",
+                    "layout": [
+                        { "type": "text", "text": "🔥 Egzersiz Tamam!", "size": "large" },
+                        { "type": "card", "title": "AI Analiz Sonucu", "desc": "Metabolizmanız %12 hızlandı. Günlük adım hedefi güncellendi." },
+                        { "type": "button", "label": "Ana Sayfaya Dön", "action": "navigate", "target": "main" }
+                    ]
+                }
+            }
+        elif any(w in idea_lower for w in ["yemek", "restoran", "kurye", "sipariş", "mutfak"]):
+            app_name = "QuickBite"
+            primary_color = "#ef4444"
+            screens = {
+                "main": {
+                    "navigation_title": "Yemek Siparişi",
+                    "layout": [
+                        { "type": "text", "text": "🍔 Hızlı AI Mutfağı", "size": "large" },
+                        { "type": "card", "title": "Aktif Sipariş", "desc": "Gurme Burger Menüsü hazırlanıyor." },
+                        { "type": "list", "items": ["1x Gurme Burger", "1x Patates Cipsi", "1x Coca Cola Zero"] },
+                        { "type": "button", "label": "Kurye Konumunu Takip Et", "action": "navigate", "target": "track" }
+                    ]
+                },
+                "track": {
+                    "navigation_title": "Kurye Takibi",
+                    "layout": [
+                        { "type": "text", "text": "🚴 Kurye Yolda", "size": "medium" },
+                        { "type": "card", "title": "Teslimat Durumu", "desc": "Kurye Ahmet yola çıktı. Tahmini varış: 2 dk." },
+                        { "type": "button", "label": "Temassız Teslimat Onayı", "action": "navigate", "target": "success" }
+                    ]
+                },
+                "success": {
+                    "navigation_title": "Teslim Edildi",
+                    "layout": [
+                        { "type": "text", "text": "🎉 Afiyet Olsun!", "size": "large" },
+                        { "type": "card", "title": "Sipariş Tamamlandı", "desc": "Yemek teslim edildi. Lütfen restoranı puanlayın." },
+                        { "type": "button", "label": "Ana Sayfaya Dön", "action": "navigate", "target": "main" }
+                    ]
+                }
+            }
+        elif any(w in idea_lower for w in ["ticaret", "market", "satış", "dükkan", "e-ticaret"]):
+            app_name = "B2BStore"
+            primary_color = "#6366f1"
+            screens = {
+                "main": {
+                    "navigation_title": "Yönetim Paneli",
+                    "layout": [
+                        { "type": "text", "text": "🛒 Akıllı Mağaza Durumu", "size": "large" },
+                        { "type": "card", "title": "Bugünkü Satış", "desc": "12 sipariş alındı. Toplam ciro: $240.00" },
+                        { "type": "button", "label": "Hızlı Ürün Ekle", "action": "navigate", "target": "add_product" }
+                    ]
+                },
+                "add_product": {
+                    "navigation_title": "Ürün Ekle",
+                    "layout": [
+                        { "type": "text", "text": "➕ Yeni Ürün Bilgisi", "size": "medium" },
+                        { "type": "input", "placeholder": "Ürün Adı", "input_type": "text" },
+                        { "type": "input", "placeholder": "Fiyat ($)", "input_type": "number" },
+                        { "type": "button", "label": "AI ile Açıklama Yaz ve Kaydet", "action": "navigate", "target": "success" }
+                    ]
+                },
+                "success": {
+                    "navigation_title": "Ürün Kaydedildi",
+                    "layout": [
+                        { "type": "text", "text": "🚀 Ürün Mağazada!", "size": "large" },
+                        { "type": "card", "title": "AI Açıklaması Hazır", "desc": "Yapay zeka SEO uyumlu ürün açıklamasını otomatik oluşturdu." },
+                        { "type": "button", "label": "Ana Sayfaya Dön", "action": "navigate", "target": "main" }
+                    ]
+                }
+            }
+        else:
+            app_name = f"{kw_title}AI"
+            primary_color = "#ec4899"
+            screens = {
+                "main": {
+                    "navigation_title": "Dashboard",
+                    "layout": [
+                        { "type": "text", "text": f"🤖 {kw_title} AI Platformu", "size": "large" },
+                        { "type": "chart", "chart_type": "ring", "value": 92, "label": "Ajan Hazırlık Skoru" },
+                        { "type": "card", "title": "Sistem Sağlığı", "desc": f"Tüm otonom {main_kw} akışları optimize edildi." },
+                        { "type": "button", "label": "Ajan Görevini Tetikle", "action": "navigate", "target": "trigger" }
+                    ]
+                },
+                "trigger": {
+                    "navigation_title": "Ajan Tetikle",
+                    "layout": [
+                        { "type": "text", "text": "⚡ Ajan Parametreleri", "size": "medium" },
+                        { "type": "input", "placeholder": "Görev Hedefi", "input_type": "text" },
+                        { "type": "button", "label": "Orkestrasyonu Başlat", "action": "navigate", "target": "success" }
+                    ]
+                },
+                "success": {
+                    "navigation_title": "Başarı",
+                    "layout": [
+                        { "type": "text", "text": "🚀 Ajanlar Başlatıldı!", "size": "large" },
+                        { "type": "card", "title": "Görev Dağıtıldı", "desc": "Otonom iş akışları arka planda yürütülüyor." },
+                        { "type": "button", "label": "Ana Sayfaya Dön", "action": "navigate", "target": "main" }
+                    ]
+                }
+            }
+        return {
+            "app_name": app_name,
+            "branding": {
+                "primary_color": primary_color,
+                "dark_mode": True
+            },
+            "initial_screen": "main",
+            "screens": screens
+        }
+

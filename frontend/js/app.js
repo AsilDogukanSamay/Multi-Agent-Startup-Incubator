@@ -34,6 +34,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const tSummary = document.getElementById('t-summary');
 
     let finalReportMarkdown = "";
+    let currentPrototype = null;
+    let activeProtoScreen = 'main';
 
     // Tab Switching Logic
     const tabButtons = document.querySelectorAll('.tab-btn');
@@ -270,7 +272,9 @@ document.addEventListener('DOMContentLoaded', () => {
         initMouseGlowListeners();
 
         // Build 3D Mockup data based on idea
-        buildMockupData(data.startup_idea);
+        currentPrototype = data.ui_prototype || null;
+        activeProtoScreen = currentPrototype ? (currentPrototype.initial_screen || 'main') : 'main';
+        buildMockupData(data.startup_idea, data.ui_prototype);
     }
 
     // Copy to Clipboard
@@ -366,7 +370,17 @@ document.addEventListener('DOMContentLoaded', () => {
         updatePhoneScreen(tabName);
     }
 
-    function buildMockupData(idea) {
+    function buildMockupData(idea, uiProto) {
+        currentPrototype = uiProto || null;
+        
+        if (currentPrototype) {
+            activeProtoScreen = currentPrototype.initial_screen || 'main';
+            // Also sync left side tab title/app title
+            appTitle = currentPrototype.app_name || "Girişim";
+            switchTab("home");
+            return;
+        }
+
         const ideaLower = idea.toLowerCase();
         
         // Clean and get first word as app title
@@ -416,6 +430,186 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
+        // --- NEW DYNAMIC UI PROTOTYPE RENDERER ---
+        if (currentPrototype && currentPrototype.screens) {
+            const protoData = currentPrototype;
+            const appName = protoData.app_name || "Girişim App";
+            const branding = protoData.branding || {};
+            const primaryColor = branding.primary_color || "var(--accent-purple)";
+
+            // Update css branding custom property
+            const phoneDevice = document.getElementById('phone-device');
+            if (phoneDevice) {
+                phoneDevice.style.setProperty('--proto-primary-color', primaryColor);
+            }
+
+            // Get current active screen configuration
+            const screenId = activeProtoScreen;
+            const screenConfig = protoData.screens[screenId] || protoData.screens[protoData.initial_screen || 'main'];
+            const navTitle = screenConfig ? screenConfig.navigation_title : "Ana Sayfa";
+
+            let screenHtml = `
+                <div class="phone-status-bar">
+                    <span class="status-time">${timeStr}</span>
+                    <div class="status-icons">
+                        <i class="fa-solid fa-signal"></i>
+                        <i class="fa-solid fa-wifi"></i>
+                        <i class="fa-solid fa-battery-full"></i>
+                    </div>
+                </div>
+                <div class="phone-ui-header" style="background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 8px 12px; display: flex; justify-content: space-between; align-items: center;">
+                    <span class="phone-ui-appname" style="font-size: 0.65rem; color: ${primaryColor}; font-weight: 700; letter-spacing: 0.5px;">
+                        <i class="fa-solid fa-rocket"></i> ${appName}
+                    </span>
+                    <span style="font-size: 0.55rem; color: var(--text-secondary); font-weight: 500;">${navTitle}</span>
+                </div>
+                <div class="phone-scroll-container" style="flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 50px;">
+            `;
+
+            if (screenConfig && screenConfig.layout) {
+                screenConfig.layout.forEach((component, idx) => {
+                    const type = (component.type || '').toUpperCase();
+
+                    if (type === 'TEXT') {
+                        const size = component.size || 'medium';
+                        let style = 'font-size: 0.6rem; color: var(--text-secondary); line-height: 1.4;';
+                        if (size === 'large') {
+                            style = 'font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 4px;';
+                        } else if (size === 'small') {
+                            style = 'font-size: 0.5rem; color: var(--text-muted);';
+                        }
+                        screenHtml += `<div style="${style}">${component.text || ''}</div>`;
+                    }
+
+                    else if (type === 'BUTTON') {
+                        const label = component.label || 'Aksiyon';
+                        const target = component.target || '';
+                        const action = component.action || '';
+
+                        screenHtml += `
+                            <button class="phone-ui-btn" 
+                                    style="background: linear-gradient(135deg, ${primaryColor}, ${adjustColorBrightness(primaryColor, -20)}); box-shadow: 0 4px 10px rgba(0,0,0,0.25); margin-top: 5px; color: #fff;" 
+                                    data-proto-action="${action}" 
+                                    data-proto-target="${target}">
+                                ${label}
+                            </button>
+                        `;
+                    }
+
+                    else if (type === 'INPUT') {
+                        const placeholder = component.placeholder || 'Değer girin...';
+                        const inputType = component.input_type || 'text';
+
+                        screenHtml += `
+                            <input type="${inputType}" 
+                                   placeholder="${placeholder}" 
+                                   class="phone-ui-input" 
+                                   style="width: 100%; padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 0.6rem; outline: none; margin-bottom: 2px;"
+                            />
+                        `;
+                    }
+
+                    else if (type === 'CARD') {
+                        const title = component.title || 'Kart Başlığı';
+                        const desc = component.desc || 'Açıklama';
+
+                        screenHtml += `
+                            <div class="phone-ui-card" style="border-left: 3px solid ${primaryColor}; padding: 8px 10px; display: flex; flex-direction: column; gap: 3px; background: rgba(255,255,255,0.03);">
+                                <div style="font-size: 0.6rem; font-weight: 600; color: #fff;">${title}</div>
+                                <div style="font-size: 0.5rem; color: var(--text-secondary); line-height: 1.3;">${desc}</div>
+                            </div>
+                        `;
+                    }
+
+                    else if (type === 'LIST') {
+                        const items = component.items || [];
+                        let itemsHtml = items.map(item => `
+                            <div style="padding: 6px 8px; background: rgba(255,255,255,0.02); border-radius: 6px; border: 1px solid rgba(255,255,255,0.04); font-size: 0.5rem; color: var(--text-secondary); display: flex; align-items: center; gap: 6px;">
+                                <i class="fa-solid fa-chevron-right" style="color: ${primaryColor}; font-size: 0.4rem;"></i>
+                                <span>${item}</span>
+                            </div>
+                        `).join('');
+
+                        screenHtml += `
+                            <div style="display: flex; flex-direction: column; gap: 5px;">
+                                ${itemsHtml}
+                            </div>
+                        `;
+                    }
+
+                    else if (type === 'CHART') {
+                        const value = component.value || 50;
+                        const label = component.label || 'Oran';
+                        const radius = 38;
+                        const circum = 2 * Math.PI * radius; // 238.76
+                        const offset = circum * (1 - value / 100);
+
+                        screenHtml += `
+                            <div class="phone-ui-circle-progress" style="margin: 8px 0;">
+                                <div class="svg-container" style="position: relative; display: flex; justify-content: center; align-items: center;">
+                                    <svg class="svg-progress-svg" width="90" height="90">
+                                        <circle class="svg-progress-bg" cx="45" cy="45" r="${radius}"></circle>
+                                        <circle class="svg-progress-val" cx="45" cy="45" r="${radius}" stroke="${primaryColor}" stroke-dasharray="${circum}" stroke-dashoffset="${offset}"></circle>
+                                    </svg>
+                                    <span class="phone-ui-ring-value" style="color: #fff; font-size: 0.8rem; font-weight: 700;">%${value}</span>
+                                </div>
+                                <span style="font-size: 0.5rem; color: var(--text-muted); margin-top: 4px;">${label}</span>
+                            </div>
+                        `;
+                    }
+                });
+            }
+
+            screenHtml += `
+                </div>
+                <!-- Dynamic Navigation tabs mapped to the screens -->
+                <div class="phone-bottom-nav">
+            `;
+
+            const screenKeys = Object.keys(protoData.screens).slice(0, 4);
+            const tabIcons = ['fa-house', 'fa-chart-simple', 'fa-comment-dots', 'fa-gear'];
+
+            screenKeys.forEach((sKey, idx) => {
+                const icon = tabIcons[idx] || 'fa-circle';
+                screenHtml += `
+                    <i class="fa-solid ${icon} nav-icon ${activeProtoScreen === sKey ? 'active' : ''}" 
+                       style="${activeProtoScreen === sKey ? 'color: ' + primaryColor : ''}" 
+                       data-nav-btn="${sKey}"></i>
+                `;
+            });
+
+            screenHtml += `
+                </div>
+            `;
+
+            screen.innerHTML = screenHtml;
+
+            // Attach dynamic tab switching
+            const navBtns = screen.querySelectorAll('[data-nav-btn]');
+            navBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetScreen = btn.getAttribute('data-nav-btn');
+                    activeProtoScreen = targetScreen;
+                    updatePhoneScreen(tab);
+                });
+            });
+
+            // Attach action to layout buttons
+            const layoutBtns = screen.querySelectorAll('[data-proto-action="navigate"]');
+            layoutBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetScreen = btn.getAttribute('data-proto-target');
+                    if (protoData.screens[targetScreen]) {
+                        activeProtoScreen = targetScreen;
+                        updatePhoneScreen(tab);
+                    }
+                });
+            });
+
+            return;
+        }
+
+        // --- OLD STATIC CATEGORY FALLBACK (IF NO DYNAMIC PROTOTYPE) ---
         // Screen base layout with iOS Status Bar
         let screenHtml = `
             <div class="phone-status-bar">
@@ -636,7 +830,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <!-- User message and reply go here -->
                     </div>
                     <div class="phone-ui-card" style="padding: 6px; gap: 4px; border-radius: 8px;">
-                        <span style="font-size: 0.5rem; color: var(--text-muted); margin-bottom: 2px;">Soru Seç:</span>
+                        <span style="font-size: 0.55rem; color: var(--text-muted); margin-bottom: 2px;">Soru Seç:</span>
                         <button class="phone-ui-btn" id="chat-q1-btn" style="padding: 6px; font-size: 0.55rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); text-align: left; justify-content: flex-start; color: var(--text-secondary); box-shadow: none;">💵 Maliyet nedir?</button>
                         <button class="phone-ui-btn" id="chat-q2-btn" style="padding: 6px; font-size: 0.55rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); text-align: left; justify-content: flex-start; color: var(--text-secondary); box-shadow: none; margin-top: 4px;">🎯 Hedef kitle kim?</button>
                     </div>
@@ -767,6 +961,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
             });
         }
+    }
+
+    function adjustColorBrightness(hex, percent) {
+        let num = parseInt(hex.replace("#",""), 16),
+        amt = Math.round(2.55 * percent),
+        R = (num >> 16) + amt,
+        G = (num >> 8 & 0x00FF) + amt,
+        B = (num & 0x0000FF) + amt;
+        return "#" + (0x1000000 + (R<255?R<0?0:R:255)*0x10000 + (G<255?G<0?0:G:255)*0x100 + (B<255?B<0?0:B:255)).toString(16).slice(1);
     }
 
     // Initialize on load

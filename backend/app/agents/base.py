@@ -18,6 +18,7 @@ class SharedMemory(BaseModel):
     financial_plan: Optional[Dict[str, Any]] = None
     technical_architecture: Optional[Dict[str, Any]] = None
     final_report: Optional[str] = None
+    ui_prototype: Optional[Dict[str, Any]] = None
     agent_logs: List[Dict[str, Any]] = Field(default_factory=list)
 
     def add_log(self, agent_name: str, message: str, data: Optional[Any] = None):
